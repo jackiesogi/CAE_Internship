@@ -1,0 +1,279 @@
+# .gitignore for ASP.NET Core Razor Pages project
+
+# Ignore Visual Studio temporary files, build results, and
+# folder-based project model files.
+.vscode/
+.vscode/*
+.vscode/*.*
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Mono Auto Generated Files
+mono_crash.*
+
+# OS-generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+desktop.ini
+Thumbs.db
+
+# Visual Studio
+.vscode/
+.vscode/*.*
+*.csproj.user
+*.csproj.core.json
+*.csproj.nuget.cache
+*.csproj.nuget.g.props
+*.csproj.nuget.g.targets
+*.nupkg
+*.sqlproj.user
+*.sln.docstates
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# ASP.NET Web API / MVC / Razor Pages
+appsettings.Development.json
+appsettings.Production.json
+appsettings.Staging.json
+appsettings.Test.json
+appsettings.*.local.json
+appsettings.*.Development.json
+appsettings.*.Production.json
+appsettings.*.Staging.json
+appsettings.*.Test.json
+
+# Common ASP.NET Core Scenarios
+wwwroot/
+wwwroot/*
+wwwroot/*.*
+
+# Node.js dependencies
+node_modules/
+node_modules/*
+node_modules/*.*
+
+# Yarn
+yarn.lock
+
+# npm package files
+package-lock.json
+package.json
+
+# Logs
+*.log
+**/logs
+*.log.*
+*.nlog
+*.log4net
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Output directory
+/bin
+/bin/*
+/obj
+/obj/*
+
+# NuGet
+*.nupkg
+*.snupkg
+# NuGet Symbol Server Package
+*.snupkg
+*.nuget
+
+# DotNet Core artifacts
+project.lock.json
+project.fragment.lock.json
+project.nuget.cache
+project.nuget.g.props
+project.nuget.g.targets
+.nuget
+
+# DotNet Core generated files
+*.dnu.cache
+*.dnx.cache
+*.swp
+
+# Resharper
+*.resharper.user
+_ReSharper*
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Image file cache
+*.iws
+
+# Windows thumbnail cache files
+*.stackdump
+
+# Rider
+.idea/
+.idea/*
+.idea/*.*
+.idea/*
+.idea/*
+.idea/*.*
+.idea/.idea.jdk*
+.idea/.idea.*
+.idea/.rider.*
+.idea/.idea.*
+.idea/workspace.*
+.idea/modules.xml
+.idea/.idea.*
+.idea/*.iml
+.idea/misc.xml
+
+# Database files
+*.mdf
+*.ldf
+
+# SQL Server Files
+*.bak
+*.sql
+*.ndf
+
+# Python virtual environments
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# VS Code
+.vscode/
+.vscode/*
+.vscode/*.*
+
+# VS Code Extension files
+.vscode-test/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+
+# Directories potentially created on the system volume
+.VolumeIcon.icns
+
+# Backup files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+desktop.ini
+Thumbs.db
+ehthumbs.db
+
+# Temporary files
+*.swp
+*.swo
+*.swn
+
+# Visual Studio
+.vscode/
+.vscode/*
+.vscode/*.*
+
+# Rider
+.idea/
+.idea/*
+.idea/*.*
+.idea/
+.idea/.idea.*
+.idea/*.iml
+.idea/modules.xml
+.idea/workspace.xml
+.idea/tasks.xml
+
+# Rider + dotUltimate integration
+.idea/dotUltimateSettings
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Recycle Bin used on file shares
+$.Trashes
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folders created by OS
+Desktop.ini
+
+# Rider
+.idea
+.idea/*
+.idea/*.*
+.idea/dotUltimateSettings
+
+# Visual Studio
+.vscode
+.vscode/*
+.vscode/*.*
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+
+# Directories potentially created on the system volume
+.VolumeIcon.icns
+
+# Backup files
+.DS_Store
+.DS_Store?
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Windows image file caches
+*.stackdump
+*.lnk
+
+# Rider
+.idea

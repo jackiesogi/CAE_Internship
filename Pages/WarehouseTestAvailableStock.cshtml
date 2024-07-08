@@ -1,0 +1,435 @@
+﻿@page
+@model FW_StorageM.Pages.WarehouseTestAvailableStockModel
+@{
+	ViewData["Title"] = "查詢可用模版";
+}
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>鋁模板庫存管理系統 - Login</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="~/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+          rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="~/css/sb-admin-2.min.css" rel="stylesheet">
+
+    <!-- Add Bootstrap from a CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Add jQuery from a CDN -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Add Instascan(QR-Code Scaner) library -->
+    <script type="text/javascript" src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+
+</head>
+
+<body>
+    <h1 class="h3 mb-2 text-primary">庫存可用模板(Server: @Model.Server)</h1>
+    
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12" style="padding-top: 20px;">
+                <form method="post">
+	    	    <input type="text" asp-for="SearchFormworkName" />
+                    <button class="btn btn-primary" type="submit">查詢</button>
+                </form>
+            </div>
+            
+        </div>
+    </div>
+
+   
+
+
+    <div class="card-body">
+        <ul class="nav nav-tabs" id="myTabs" role="tablist">
+            @* <li class="nav-item">
+                <a class="nav-link active" id="table1-tab" data-toggle="tab" href="#table1" role="tab" aria-controls="table1" aria-selected="true">廠內庫存總表</a>
+            </li>*@
+            <li class="nav-item">
+                <a class="nav-link active" id="table2-tab" data-toggle="tab" href="#table2" role="tab" aria-controls="table2" aria-selected="false">庫存數量</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="table3-tab" data-toggle="tab" href="#table3" role="tab" aria-controls="table3" aria-selected="false">庫存廢料數量</a>
+            </li>
+        </ul>
+
+        @if (Model.IsPostRequestHandled)
+        {
+            <div class="alert alert-info" role="alert">
+                最後更新時間: <strong>@Model.LatestUpdateTime.ToString("G")</strong>
+            </div>
+        }
+
+
+        <div class="tab-content">
+           @*  <div class="tab-pane fade show active" id="table1" role="tabpanel" aria-labelledby="table1-tab">
+                <div class="col-md-12 mt-4 mb-4">
+                    <p class="mb-2 text-primary">*不包含廢料</p>
+                </div>
+                <div class="col-md-12 mt-4 mb-4">
+                    <button id="exportButton1" asp-action="ExportToExcel" class="btn btn-primary">匯出至Excel</button>
+                </div>
+                <table class="table table-striped text-center mt-3" id="dataTable1" data-excel-name="廠內庫存總表">
+                    
+                    <thead>
+                        <tr>
+
+                            <th>模板全名</th>
+                            <th>名稱</th>
+                            <th>SPCode</th>
+                            <th>W1</th>
+                            <th>W2</th>
+                            <th>W3</th>
+                            <th>H</th>
+                            <th>數量</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.WarehouseTestAvailableStockDictionary != null)
+                        {
+                            @foreach (var key in Model.WarehouseTestAvailableStockDictionary.Keys)
+                            {
+                                @if (Model.WarehouseTestAvailableStockDictionary[key].Quantity != 0)
+                                {
+                                    <tr>
+                                        <td>@Model.WarehouseTestAvailableStockDictionary[key].FormworkName.Replace("-", "_")</td>
+                                        <td>@Model.WarehouseTestAvailableStockDictionary[key].FormworkType.Replace("-", "_")</td>
+                                        <td>@Model.WarehouseTestAvailableStockDictionary[key].SPCode.Replace("-", "_")</td>
+                                        @if ((Model.WarehouseTestAvailableStockDictionary[key].Width1 != 0))
+                                        {
+                                            <td>@Model.WarehouseTestAvailableStockDictionary[key].Width1</td>
+                                        }
+                                        else
+                                        {
+                                            <td></td>
+                                        }
+                                        @if ((Model.WarehouseTestAvailableStockDictionary[key].Width2 != 0))
+                                        {
+                                            <td>@Model.WarehouseTestAvailableStockDictionary[key].Width2</td>
+                                        }
+                                        else
+                                        {
+                                            <td></td>
+                                        }
+                                        @if ((Model.WarehouseTestAvailableStockDictionary[key].Width3 != 0))
+                                        {
+                                            <td>@Model.WarehouseTestAvailableStockDictionary[key].Width3</td>
+                                        }
+                                        else
+                                        {
+                                            <td></td>
+                                        }
+                                        @if ((Model.WarehouseTestAvailableStockDictionary[key].Height != 0))
+                                        {
+                                            <td>@Model.WarehouseTestAvailableStockDictionary[key].Height</td>
+                                        }
+                                        else
+                                        {
+                                            <td></td>
+                                        }
+                                        <td>@Model.WarehouseTestAvailableStockDictionary[key].Quantity</td>
+                                    </tr>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6">No data available</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>*@
+
+            <div class="tab-pane fade show active" id="table2" role="tabpanel" aria-labelledby="table2-tab">
+                <div class="col-md-12 mt-4 mb-4">
+                    <p class="mb-2 text-primary">*不包含廢料</p>
+                </div>
+                <div class="col-md-12 mt-4 mb-4">
+                    <button id="exportButton2" asp-action="ExportToExcel" class="btn btn-primary">匯出至Excel</button>
+                </div>
+                <table class="table table-striped text-center mt-3" id="dataTable2" data-excel-name="庫存數量">
+                    <thead>
+                        <tr>
+                            <th>模板全名</th>
+                            <th>名稱</th>
+                            <th>SPCode</th>
+                            <th>W1</th>
+                            <th>W2</th>
+                            <th>W3</th>
+                            <th>H</th>
+                            <th>數量</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.WarehouseTestAvailableDetailedStockDictionary != null)
+                        {
+                            var count = 0;
+                            @foreach (var key in Model.WarehouseTestAvailableDetailedStockDictionary.Keys)
+                            {
+                                var groupedItems = Model.WarehouseTestAvailableDetailedStockDictionary[key]
+                                .GroupBy(item => new { item.FormworkName, item.WarehouseItems.FirstOrDefault()?.SPCode });
+
+                                //Console.WriteLine("[Page]: FormworkName = " + key);
+
+                                foreach (var group in groupedItems)
+                                {
+                                    var sumQuantity = group.Sum(item => item.WarehouseItems.Sum(w => w.Quantity));
+                                    
+                                    //Console.WriteLine("[Page]: sumQuantity = " + sumQuantity.ToString());
+                                    
+                                    if (sumQuantity != -1)  // Originally if (sumQuantity != 0)
+                                    {
+                                        <tr>
+                                            <td>@group.Key.FormworkName.Replace("-", "_")</td>
+                                            <td>@group.First().FormworkType.Replace("-", "_")</td>
+                                            <td>@group.First().WarehouseItems.FirstOrDefault()?.SPCode.Replace("-", "_")</td>
+                                            <td>
+                                                @if (group.First().WarehouseItems.FirstOrDefault()?.Width1 != 0)
+                                                {
+                                                    @group.First().WarehouseItems.FirstOrDefault()?.Width1
+                                                }
+                                                else
+                                                {
+
+                                                }
+                                            </td>
+
+                                            <td>
+                                                @if (group.First().WarehouseItems.FirstOrDefault()?.Width2 != 0)
+                                                {
+                                                    @group.First().WarehouseItems.FirstOrDefault()?.Width2
+                                                }
+                                                else
+                                                {
+
+                                                }
+                                            </td>
+
+                                            <td>
+                                                @if (group.First().WarehouseItems.FirstOrDefault()?.Width3 != 0)
+                                                {
+                                                    @group.First().WarehouseItems.FirstOrDefault()?.Width3
+                                                }
+                                                else
+                                                {
+
+                                                }
+                                            </td>
+
+                                            <td>
+                                                @if (group.First().WarehouseItems.FirstOrDefault()?.Height != 0)
+                                                {
+                                                    @group.First().WarehouseItems.FirstOrDefault()?.Height
+                                                }
+                                                else
+                                                {
+
+                                                }
+                                            </td>
+
+                                            <td>@sumQuantity</td>
+                                        </tr>
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="11">No data available</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="tab-pane fade" id="table3" role="tabpanel" aria-labelledby="table3-tab">
+                <div class="col-md-12 mt-4 mb-4">
+                    <button id="exportButton3" asp-action="ExportToExcel" class="btn btn-primary">匯出至Excel</button>
+                </div>
+                <table class="table table-striped text-center mt-3" id="dataTable3" data-excel-name="庫存廢料數量">
+                    <thead>
+                        <tr>
+                            <th>模板全名</th>
+                            <th>名稱</th>
+                            <th>SPCode</th>
+                            <th>W1</th>
+                            <th>W2</th>
+                            <th>W3</th>
+                            <th>H</th>
+                            <th>數量</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.WarehouseTestWasteStockDictionary != null)
+                        {
+                            @foreach (var key in Model.WarehouseTestWasteStockDictionary.Keys)
+                            {
+                                var groupedItems = Model.WarehouseTestWasteStockDictionary[key]
+                                .GroupBy(item => new { item.FormworkName, item.WarehouseItems.FirstOrDefault()?.SPCode});
+
+                                foreach (var group in groupedItems)
+                                {
+                                    var sumQuantity = group.Sum(item => item.WarehouseItems.Sum(w => w.Quantity));
+                                    if (sumQuantity != 0)
+                                    {
+                                        <tr>
+                                            <td>@group.Key.FormworkName.Replace("-", "_")</td>
+                                            <td>@group.First().FormworkType.Replace("-", "_")</td>
+                                            <td>@group.First().WarehouseItems.FirstOrDefault()?.SPCode.Replace("-", "_")</td>
+                                            <td>
+                                                @if (group.First().WarehouseItems.FirstOrDefault()?.Width1 != 0)
+                                                {
+                                                    @group.First().WarehouseItems.FirstOrDefault()?.Width1
+                                                }
+                                                else
+                                                {
+
+                                                }
+                                            </td>
+
+                                            <td>
+                                                @if (group.First().WarehouseItems.FirstOrDefault()?.Width2 != 0)
+                                                {
+                                                    @group.First().WarehouseItems.FirstOrDefault()?.Width2
+                                                }
+                                                else
+                                                {
+
+                                                }
+                                            </td>
+
+                                            <td>
+                                                @if (group.First().WarehouseItems.FirstOrDefault()?.Width3 != 0)
+                                                {
+                                                    @group.First().WarehouseItems.FirstOrDefault()?.Width3
+                                                }
+                                                else
+                                                {
+
+                                                }
+                                            </td>
+
+                                            <td>
+                                                @if (group.First().WarehouseItems.FirstOrDefault()?.Height != 0)
+                                                {
+                                                    @group.First().WarehouseItems.FirstOrDefault()?.Height
+                                                }
+                                                else
+                                                {
+
+                                                }
+                                            </td>
+
+                                            <td>@sumQuantity</td>
+                                        </tr>
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="11">No data available</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+
+
+
+
+        </div>
+    </div>
+
+    <style>
+     .my-card-container {
+            margin-top: 20px; /* Add the desired space (20px in this example) */
+        }
+
+        select:disabled {
+            background-color: #eee;
+        }
+
+        #preview, #preview video, #preview + div {
+            z-index: 999999; /* 設置一個非常大的 z-index 值 */
+            background-color: #fff; /* 給它一個背景色 */
+        }
+
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+    <script>
+        var lastupdatetime = '@Model.LatestUpdateTime.ToString("yyyyMMddHHmmssfff")' + 'TPE';
+
+
+
+        document.getElementById('exportButton2').addEventListener('click', function () {
+            var table2excel = new Table2Excel();
+            var fileName = '測試廠庫存數量總表' + lastupdatetime;
+            var table2 = document.getElementById('dataTable2');
+
+            table2excel.export(table2, fileName);
+        });
+
+        document.getElementById('exportButton3').addEventListener('click', function () {
+            var table2excel = new Table2Excel();
+            var fileName = '測試廠庫存廢料數量總表' + lastupdatetime;
+            var table3 = document.getElementById('dataTable3');
+
+            table2excel.export(table3, fileName);
+        });
+
+
+
+        $(document).ready(function () {
+
+            var tables = [
+                $('#dataTable2'),
+                $('#dataTable3')
+            ];
+
+            // Destroy existing DataTable instances for all tables
+            tables.forEach(function (table) {
+                var dataTable = table.DataTable();
+                dataTable.destroy();
+            });
+
+            // Reinitialize DataTables with your desired settings for all tables
+            tables.forEach(function (table) {
+                table.DataTable({
+                    "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                    "pageLength": -1,
+                });
+            });
+
+
+
+        });
+    </script>
+
+</body>
+
+</html>
+
