@@ -1,4 +1,4 @@
-namespace Formwork_Warehouse_Razor
+namespace FW_StorageM
 {
     public class Program
     {

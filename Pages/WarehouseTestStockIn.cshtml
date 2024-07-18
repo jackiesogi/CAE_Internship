@@ -1,0 +1,569 @@
+﻿@page
+@model FW_StorageM.Pages.WarehouseTestStockInModel
+@{
+}
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>鋁模板庫存管理系統 - Login</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="~/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+          rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="~/css/sb-admin-2.min.css" rel="stylesheet">
+
+    <!-- Add Bootstrap from a CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Add jQuery from a CDN -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Add Instascan(QR-Code Scaner) library -->
+    <script type="text/javascript" src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+
+</head>
+
+<body>
+    <h1 class="h3 mb-2 text-primary">模板入庫存(測試廠)</h1>
+    <p class="mb-2 text-primary">請使用手動輸入方式或上傳Excel表格進行模板入庫存(二擇一)</p>
+    
+    <div class="container-fluid mt-4">
+        <div class="card">
+            <div class="card-body ">
+                <p class="mb-2 text-primary">手動輸入(*號為必要欄位)</p>
+                <table class="table table-striped text-center mt-3" id="datatable1">
+                    <thead>
+                        <tr>
+                            <th class="medium-column">區域</th>
+                            <th class="narrow-column">庫位</th>
+                            <th class="wide-column">模板全名</th>
+                            <th class="medium-column">名稱*</th>
+                            <th class="narrow-column">SP Code</th>
+                            <th class="medium-column">W1*</th>
+                            <th class="narrow-column">W2</th>
+                            <th class="narrow-column">W3</th>
+                            <th class="medium-column">H*</th>
+                            <th class="medium-column">入庫數量*</th>
+                            <th class="medium-column">來源階層一*</th>
+                            <th class="narrow-column">備註</th>
+                            <th class="medium-column">動作</th>
+                        </tr>
+                    </thead>
+
+
+                    <tbody>
+                        <tr>
+
+                            <td>
+                                <select id="area" class="form-control">
+                                    <option value="成品" selected>成品</option>
+                                    <option value="廢料">廢料</option>
+                                </select>
+                            </td>
+                            <td><input type="text" id="location" class="form-control"></td>
+                            <td>
+                                <input type="text" id="formworkFullName" class="form-control" placeholder="例:WF_100X2400" onchange="generateFormattedString()">
+                            </td>
+                            <td><input type="text" id="formworkName" class="form-control" placeholder="例:WF" onchange="generateFormattedString()"></td>
+                            <td><input type="text" id="spCode" class="form-control" onchange="generateFormattedString()"></td>
+                            <td><input type="number" id="width1" class="form-control" min="1" pattern="\d+" placeholder="例:100" onchange="generateFormattedString()"></td>
+                            <td><input type="number" id="width2" class="form-control" min="1" pattern="\d+" onchange="generateFormattedString()"></td>
+                            <td><input type="number" id="width3" class="form-control" min="1" pattern="\d+" onchange="generateFormattedString()"></td>
+                            <td><input type="number" id="height" class="form-control" min="1" pattern="\d+" placeholder="例:2400" onchange="generateFormattedString()"></td>
+                            <td><input type="number" id="quantity" class="form-control" placeholder="例:5"></td>
+                            <td>
+                                <input type="text" id="sourceLevel1" class="form-control" placeholder="例:盤點">
+                            </td>
+                            <td><input type="text" id="remark" class="form-control"></td>
+                            <td>
+                                <button class="btn btn-danger" onclick="deleteRow(this)">刪除列</button>
+                            </td>
+
+                        </tr>
+
+
+                    </tbody>
+
+                </table>
+                <button class="btn btn-primary" onclick="addRow()">新增行</button> <button id="confirm-button" class="btn btn-primary" onclick="postData()">確認</button>
+
+
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid" style="padding-top: 20px;">
+        <div class="card">
+            <div class="card-body ">
+                <p class="mb-2 text-primary">上傳Excel表格(特定格式)</p>
+                <form method="post" enctype="multipart/form-data">
+                    <input type="file" name="file" onclick="ShowSubmit()" />
+                    <input type="submit" value="上傳" id="ExcelSubmit" onclick="HideSubmit()" />
+                </form>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["UploadMessage"] != null)
+    {
+        <div class="alert alert-info" style="margin-top: 20px;">
+            @TempData["UploadMessage"]
+        </div>
+    
+
+    <div class="container-fluid mt-4">
+        <div class="card">
+            <div class="card-body ">
+                <h1 class="h3 mb-2 text-primary">入庫存成功</h1>
+                <div class="col-md-12" style="margin-top: 10px; margin-bottom: 10px;">
+                    <button id="exportButton1" asp-action="ExportToExcel" class="btn btn-primary">匯出至Excel</button>
+                </div>
+                <table class="table table-striped text-center mt-3" id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>區域</th>
+                            <th>庫位</th>
+                            <th>模板全名</th>
+                            <th>名稱</th>
+                            <th>SPCode</th>
+                            <th>W1</th>
+                            <th>W2</th>
+                            <th>W3</th>
+                            <th>H</th>
+                            <th>數量</th>
+                            <th>來源階層一</th>
+                            <th>備註</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.WarehouseTestStockInRowDataList != null)
+                        {
+                            @for (var i = 0; i < Model.WarehouseTestStockInRowDataList.Count; i++)
+                            {
+                                <tr>
+                                <td>@Model.WarehouseTestStockInRowDataList[i].StockArea.Replace("-", "_")</td>
+                                <td>@Model.WarehouseTestStockInRowDataList[i].StockLocation.Replace("-", "_")</td>
+                                <td>@Model.WarehouseTestStockInRowDataList[i].FormworkName.Replace("-", "_")</td>
+                                <td>@Model.WarehouseTestStockInRowDataList[i].FormworkType.Replace("-", "_")</td>
+                                <td>@Model.WarehouseTestStockInRowDataList[i].SPCode.Replace("-", "_")</td>
+                                    @if ((Model.WarehouseTestStockInRowDataList[i].Width1 != 0))
+                                    {
+                                                    <td>@Model.WarehouseTestStockInRowDataList[i].Width1</td>
+                                    }
+                                    else
+                                    {
+                                                    <td></td>
+                                    }
+                                    @if ((Model.WarehouseTestStockInRowDataList[i].Width2 != 0))
+                                    {
+                                                    <td>@Model.WarehouseTestStockInRowDataList[i].Width2</td>
+                                    }
+                                    else
+                                    {
+                                                    <td></td>
+                                    }
+                                    @if ((Model.WarehouseTestStockInRowDataList[i].Width3 != 0))
+                                    {
+                                                    <td>@Model.WarehouseTestStockInRowDataList[i].Width3</td>
+                                    }
+                                    else
+                                    {
+                                                    <td></td>
+                                    }
+                                    @if ((Model.WarehouseTestStockInRowDataList[i].Height != 0))
+                                    {
+                                                    <td>@Model.WarehouseTestStockInRowDataList[i].Height</td>
+                                    }
+                                    else
+                                    {
+                                                    <td></td>
+                                    }
+                                            <td>@Model.WarehouseTestStockInRowDataList[i].Quantity</td>
+                                            <td>@Model.WarehouseTestStockInRowDataList[i].FormworkSourceLevel1</td>
+                                            <td>@Model.WarehouseTestStockInRowDataList[i].Mark</td>
+                                        </tr>
+                            }
+                        }
+                        else
+                        {
+                                <tr>
+                                    <td colspan="6">No data available</td>
+                                </tr>
+                        }
+                    </tbody>
+                 </table>
+
+                <h1 class="h3 mb-2 text-primary">入庫存失敗</h1>
+                <div class="col-md-12" style="margin-top: 10px; margin-bottom: 10px;">
+                    <button id="exportButton2" asp-action="ExportToExcel" class="btn btn-primary">匯出至Excel</button>
+                </div>
+                <table class="table table-striped text-center mt-3" id="data-table">
+                    <thead>
+                        <tr>
+                            <th>區域</th>
+                            <th>庫位</th>
+                            <th>模板全名</th>
+                            <th>名稱</th>
+                            <th>SPCode</th>
+                            <th>W1</th>
+                            <th>W2</th>
+                            <th>W3</th>
+                            <th>H</th>
+                            <th>數量</th>
+                            <th>來源階層一</th>
+                            <th>備註</th>
+
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.invalidRows != null)
+                        {
+                            @for (var i = 0; i < Model.invalidRows.Count; i++)
+                            {
+                                <tr>
+                                    <td>@Model.invalidRows[i].StockArea.Replace("-", "_")</td>
+                                    <td>@Model.invalidRows[i].StockLocation.Replace("-", "_")</td>
+                                    <td>@Model.invalidRows[i].FormworkName.Replace("-", "_")</td>
+                                    <td>@Model.invalidRows[i].FormworkType.Replace("-", "_")</td>
+                                    <td>@Model.invalidRows[i].SPCode.Replace("-", "_")</td>
+                                    @if ((Model.invalidRows[i].Width1 != 0))
+                                    {
+                                        <td>@Model.invalidRows[i].Width1</td>
+                                    }
+                                    else
+                                    {
+                                        <td></td>
+                                    }
+                                    @if ((Model.invalidRows[i].Width2 != 0))
+                                    {
+                                        <td>@Model.invalidRows[i].Width2</td>
+                                    }
+                                    else
+                                    {
+                                        <td></td>
+                                    }
+                                    @if ((Model.invalidRows[i].Width3 != 0))
+                                    {
+                                        <td>@Model.invalidRows[i].Width3</td>
+                                    }
+                                    else
+                                    {
+                                        <td></td>
+                                    }
+                                    @if ((Model.invalidRows[i].Height != 0))
+                                    {
+                                        <td>@Model.invalidRows[i].Height</td>
+                                    }
+                                    else
+                                    {
+                                        <td></td>
+                                    }
+                                    <td>@Model.invalidRows[i].Quantity</td>
+                                    <td>@Model.invalidRows[i].FormworkSourceLevel1</td>
+                                    <td>@Model.invalidRows[i].Mark</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6">No data available</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+
+
+            </div>
+        </div>
+        </div>
+    }
+
+    <style>
+
+        .wide-column {
+            width: 180px; /* Adjust the width as needed */
+        }
+
+        .medium-column {
+            width: 120px; /* Adjust the width as needed */
+        }
+
+        .narrow-column {
+            width: 80px; /* Adjust the width as needed */
+        }
+
+        .my-card-container {
+            margin-top: 20px; /* Add the desired space (20px in this example) */
+        }
+
+        select:disabled {
+            background-color: #eee;
+        }
+
+        #preview, #preview video, #preview + div {
+            z-index: 999999; /* 設置一個非常大的 z-index 值 */
+            background-color: #fff; /* 給它一個背景色 */
+        }
+
+    </style>    
+
+
+    
+
+    <script>
+
+
+        document.getElementById('exportButton1').addEventListener('click', function () {
+            var table2excel = new Table2Excel();
+
+            var timestamp = new Date().toISOString().replace(/[-:.]/g, '');
+            var fileName = '測試廠入庫存成功總表_' + timestamp;
+
+
+            var activeTabTables = document.getElementById("dataTable");
+
+            // Export all tables in the active tab with the constructed file name
+            table2excel.export(activeTabTables, fileName);
+
+        });
+
+        document.getElementById('exportButton2').addEventListener('click', function () {
+            var table2excel = new Table2Excel();
+
+            var timestamp = new Date().toISOString().replace(/[-:.]/g, '');
+            var fileName = '測試廠入庫存失敗總表_' + timestamp;
+
+
+            var activeTabTables = document.getElementById("data-table");
+
+            // Export all tables in the active tab with the constructed file name
+            table2excel.export(activeTabTables, fileName);
+
+        });
+
+
+
+        function HideSubmit() {
+            document.getElementById('ExcelSubmit').hidden = true;
+        }
+
+
+        function addRow() {
+            var root = document.getElementById('datatable1').getElementsByTagName('tbody')[0];
+            var rows = root.getElementsByTagName('tr');
+            var lastRow = rows[rows.length - 1];
+            var clone = lastRow.cloneNode(true);
+
+            // 更新複製的行中的輸入和選擇元素
+            var clonedInputs = clone.querySelectorAll('input, select');
+            var originalInputs = lastRow.querySelectorAll('input, select');
+
+            clonedInputs.forEach((clonedInput, index) => {
+                if (clonedInput.tagName === 'INPUT') {
+                    clonedInput.value = originalInputs[index].value;
+                } else if (clonedInput.tagName === 'SELECT') {
+                    clonedInput.selectedIndex = originalInputs[index].selectedIndex;
+                }
+            });
+
+            root.appendChild(clone);
+        }
+
+
+        function addColumn() {
+            var rows = document.getElementById('datatable1').getElementsByTagName('tr'),
+                i = 0,
+                r,
+                c,
+                clone;
+            while ((r = rows[i++])) {
+                c = r.getElementsByTagName('td');
+                clone = cloneEl(c[c.length - 1]);
+                cleanUpInputs(clone);
+                c[0].parentNode.appendChild(clone);
+            }
+        }
+
+        function cloneEl(el) {
+            var clo = el.cloneNode(true);
+            return clo;
+        }
+
+
+        function cleanUpInputs(obj) {
+            for (var i = 0; n = obj.childNodes[i]; ++i) {
+                if (n.childNodes && n.tagName != 'INPUT') {
+                    cleanUpInputs(n);
+                } else if (n.tagName == 'INPUT' && n.type == 'text') {
+                    n.value = '';
+                }
+            }
+        }
+
+        function generateFormattedString() {
+
+            var table = document.getElementById('datatable1');
+            var rowCount = table.rows.length;
+
+            for (var rowIndex = 1; rowIndex < rowCount; rowIndex++) {
+                var row = table.rows[rowIndex];
+
+                var formworkName = row.cells[3].querySelector('input').value;
+                var width1 = row.cells[5].querySelector('input').value;
+                var width2 = row.cells[6].querySelector('input').value;
+                var width3 = row.cells[7].querySelector('input').value;
+                var height = row.cells[8].querySelector('input').value;
+                var spCode = row.cells[4].querySelector('input').value;
+
+
+                var formattedString =
+                    formworkName + "_" +
+                    width1 + (width2 ? "+" + width2 : "") + (width3 ? "+" + width3 : "") +
+                    (height ? "X" + height : "") +
+                    (spCode ? "-" + spCode : "");
+
+                row.cells[2].querySelector('input').value = formattedString;
+            }
+        }
+
+        function deleteRow(button) {
+            var row = button.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+
+        function postData(rowIndex) {
+            var data = [];
+
+            var table = document.getElementById('datatable1');
+            var rowCount = table.rows.length;
+
+            for (var rowIndex = 1; rowIndex < rowCount; rowIndex++) {
+                var row = table.rows[rowIndex];
+
+                
+                var recordUser = @Json.Serialize(User.Identity.Name);
+                var stockArea = row.cells[0].querySelector('select').value;
+                stockArea = stockArea.replace(/\s/g, '').trim().toUpperCase().replace(/-/g, '_');
+
+                var stockLocation = row.cells[1].querySelector('input').value;
+                stockLocation = stockLocation.replace(/\s/g, '').trim().toUpperCase().replace(/-/g, '_');
+
+                var formworkName = row.cells[2].querySelector('input').value;
+                formworkName = formworkName.replace(/\s/g, '').trim().toUpperCase().replace(/-/g, '_');
+
+                var formworkType = row.cells[3].querySelector('input').value;
+                formworkType = formworkType.replace(/\s/g, '').trim().toUpperCase().replace(/-/g, '_');
+
+                var spCode = row.cells[4].querySelector('input').value;
+                spCode = spCode.trim().replace(/\s/g, '').toUpperCase().replace(/-/g, '_');
+
+                var width1 = parseInt(row.cells[5].querySelector('input').value);
+                var width2 = parseInt(row.cells[6].querySelector('input').value);
+                var width3 = parseInt(row.cells[7].querySelector('input').value);
+                var height = parseInt(row.cells[8].querySelector('input').value);
+                var quantity = parseInt(row.cells[9].querySelector('input').value);
+
+                var sourceLevel1 = row.cells[10].querySelector('input').value;
+                var sourceLevel2 = "";
+                var sourceLevel3 = "";
+                var sourceLevel4 = "";
+                var remark = row.cells[11].querySelector('input').value;
+
+                if (formworkType.trim()  && formworkName &&
+                    !isNaN(width1) && !isNaN(height) && !isNaN(quantity) && sourceLevel1) {
+                    data.push({
+                        RecordUser: recordUser,
+                        StockArea: stockArea,
+                        StockLocation: stockLocation,
+                        FormworkName: formworkName,
+                        FormworkType: formworkType,
+                        SPCode: spCode,
+                        Width1: width1,
+                        Width2: width2,
+                        Width3: width3,
+                        Height: height,
+                        Quantity: quantity,
+                        FormworkSourceLevel1: sourceLevel1,
+                        FormworkSourceLevel2: sourceLevel2,
+                        FormworkSourceLevel3: sourceLevel3,
+                        FormworkSourceLevel4: sourceLevel4,
+                        Mark: remark
+                        
+                        
+                    });
+                } else {
+                    // Handle validation error, e.g., show an alert or provide user feedback
+                    alert('請填入所有必要欄位!');
+                    return;
+                }
+            }
+
+            //fetch('https://reqres.in/api/users', {
+            fetch('api/Data/saveStockInTestData', {
+                method: 'POST',
+                mode: 'cors',
+                credentials: 'same-origin',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => response.json())
+                .then(responseData => {
+                    console.log('Success:', responseData);
+                    showSuccessMessage();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+        function showSuccessMessage() {
+            // Modify this function to show a success message to the user
+            alert('已成功上傳!!');
+        }
+
+        $(document).ready(function () {
+
+            var tables = [
+
+                $('#dataTable'),
+                $('#data-table')
+            ];
+
+            // Destroy existing DataTable instances for all tables
+            tables.forEach(function (table) {
+                var dataTable = table.DataTable();
+                dataTable.destroy();
+            });
+
+            // Reinitialize DataTables with your desired settings for all tables
+            tables.forEach(function (table) {
+                table.DataTable({
+                    "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                    "pageLength": -1,
+                });
+            });
+
+        });
+
+
+
+    </script>
+</body>
+</html>

@@ -1,8 +1,8 @@
 ﻿@page
-@model FW_StorageM.Pages.WarehouseTestAvailableStockModel
+@model FW_StorageM.Pages.ReportStockChangedItemsModel
 @{
-	ViewData["Title"] = "查詢可用模版";
 }
+
 <!DOCTYPE html>
 <html lang="zh-Hant-TW">
 <head>
@@ -29,34 +29,46 @@
     <!-- Add jQuery from a CDN -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-    <!-- Add Instascan(QR-Code Scaner) library -->
-    <script type="text/javascript" src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
-
 </head>
 
 <body>
-    <h1 class="h3 mb-2 text-primary">庫存可用模板(Server: @Model.Server)</h1>
-    
+    <h1 class="h3 mb-2 text-primary">庫存異動</h1>
+
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-12" style="padding-top: 20px;">
                 <form method="post">
-	    	    <input type="text" asp-for="SearchFormworkName" />
+                    <select asp-for="WarehouseFromInput" asp-items="Model.Warehouses"></select>
+                    <input class="form-control" asp-for="SearchSrartDateFromInput" />
+                    <input class="form-control" asp-for="SearchEndDateFromInput" />
                     <button class="btn btn-primary" type="submit">查詢</button>
                 </form>
             </div>
-            
+
         </div>
+
+        @if (Model.IsPostRequestHandled)
+        {
+            <div class="alert alert-info" role="alert">
+                庫存目標廠: <strong>@Model.Warehouse.ToString()</strong>
+            </div>
+            <div class="alert alert-info" role="alert">
+                庫存資料最後更新時間: <strong>@Model.LatestUpdateTime.ToString()</strong>
+            </div>
+            <div class="alert alert-info" role="alert">
+                異動時間起始點: <strong>@Model.SearchSrartDate.ToString()</strong>
+            </div>
+            <div class="alert alert-info" role="alert">
+                異動時間終止點: <strong>@Model.SearchEndDate.ToString()</strong>
+            </div>
+            <div class="alert alert-info" role="alert">
+                異動項目數量: <strong>@Model.ChangedItemsCount</strong>
+            </div>
+        }
     </div>
-
-   
-
 
     <div class="card-body">
         <ul class="nav nav-tabs" id="myTabs" role="tablist">
-            @* <li class="nav-item">
-                <a class="nav-link active" id="table1-tab" data-toggle="tab" href="#table1" role="tab" aria-controls="table1" aria-selected="true">廠內庫存總表</a>
-            </li>*@
             <li class="nav-item">
                 <a class="nav-link active" id="table2-tab" data-toggle="tab" href="#table2" role="tab" aria-controls="table2" aria-selected="false">庫存數量</a>
             </li>
@@ -65,96 +77,7 @@
             </li>
         </ul>
 
-        @if (Model.IsPostRequestHandled)
-        {
-            <div class="alert alert-info" role="alert">
-                最後更新時間: <strong>@Model.LatestUpdateTime.ToString("G")</strong>
-            </div>
-        }
-
-
         <div class="tab-content">
-           @*  <div class="tab-pane fade show active" id="table1" role="tabpanel" aria-labelledby="table1-tab">
-                <div class="col-md-12 mt-4 mb-4">
-                    <p class="mb-2 text-primary">*不包含廢料</p>
-                </div>
-                <div class="col-md-12 mt-4 mb-4">
-                    <button id="exportButton1" asp-action="ExportToExcel" class="btn btn-primary">匯出至Excel</button>
-                </div>
-                <table class="table table-striped text-center mt-3" id="dataTable1" data-excel-name="廠內庫存總表">
-                    
-                    <thead>
-                        <tr>
-
-                            <th>模板全名</th>
-                            <th>名稱</th>
-                            <th>SPCode</th>
-                            <th>W1</th>
-                            <th>W2</th>
-                            <th>W3</th>
-                            <th>H</th>
-                            <th>數量</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        @if (Model.WarehouseTestAvailableStockDictionary != null)
-                        {
-                            @foreach (var key in Model.WarehouseTestAvailableStockDictionary.Keys)
-                            {
-                                @if (Model.WarehouseTestAvailableStockDictionary[key].Quantity != 0)
-                                {
-                                    <tr>
-                                        <td>@Model.WarehouseTestAvailableStockDictionary[key].FormworkName.Replace("-", "_")</td>
-                                        <td>@Model.WarehouseTestAvailableStockDictionary[key].FormworkType.Replace("-", "_")</td>
-                                        <td>@Model.WarehouseTestAvailableStockDictionary[key].SPCode.Replace("-", "_")</td>
-                                        @if ((Model.WarehouseTestAvailableStockDictionary[key].Width1 != 0))
-                                        {
-                                            <td>@Model.WarehouseTestAvailableStockDictionary[key].Width1</td>
-                                        }
-                                        else
-                                        {
-                                            <td></td>
-                                        }
-                                        @if ((Model.WarehouseTestAvailableStockDictionary[key].Width2 != 0))
-                                        {
-                                            <td>@Model.WarehouseTestAvailableStockDictionary[key].Width2</td>
-                                        }
-                                        else
-                                        {
-                                            <td></td>
-                                        }
-                                        @if ((Model.WarehouseTestAvailableStockDictionary[key].Width3 != 0))
-                                        {
-                                            <td>@Model.WarehouseTestAvailableStockDictionary[key].Width3</td>
-                                        }
-                                        else
-                                        {
-                                            <td></td>
-                                        }
-                                        @if ((Model.WarehouseTestAvailableStockDictionary[key].Height != 0))
-                                        {
-                                            <td>@Model.WarehouseTestAvailableStockDictionary[key].Height</td>
-                                        }
-                                        else
-                                        {
-                                            <td></td>
-                                        }
-                                        <td>@Model.WarehouseTestAvailableStockDictionary[key].Quantity</td>
-                                    </tr>
-                                }
-                            }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="6">No data available</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>*@
-
             <div class="tab-pane fade show active" id="table2" role="tabpanel" aria-labelledby="table2-tab">
                 <div class="col-md-12 mt-4 mb-4">
                     <p class="mb-2 text-primary">*不包含廢料</p>
@@ -162,8 +85,57 @@
                 <div class="col-md-12 mt-4 mb-4">
                     <button id="exportButton2" asp-action="ExportToExcel" class="btn btn-primary">匯出至Excel</button>
                 </div>
-                <table class="table table-striped text-center mt-3" id="dataTable2" data-excel-name="庫存數量">
+                <table width=100% class="table table-striped text-center mt-3" id="dataTable2" data-excel-name="庫存異動">
                     <thead>
+                        @if (Model.IsPostRequestHandled)
+                        {
+                            <tr>
+                                <th colspan="8">庫存異動表</th>
+                            </tr>
+                            <tr>
+                                <th>查詢倉庫：</th>
+                                <th>@Model.Warehouse.ToString()</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <th>查詢案件：</th>
+                                <th>全部</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <th>查詢期間：</th>
+                                <th>@Model.SearchSrartDate.ToString("yyyyMMddHHmm") TPE</th>
+                                <th> ~ </th>
+                                <th>@Model.SearchEndDate.ToString("yyyyMMddHHmm") TPE</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <th>庫存表單最後更新時間：</th>
+                                <th>@Model.LatestUpdateTime.ToString("yyyyMMddHHmm") TPE</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <th colspan="8"></th>
+                            </tr>
+                        }
                         <tr>
                             <th>模板全名</th>
                             <th>名稱</th>
@@ -172,27 +144,25 @@
                             <th>W2</th>
                             <th>W3</th>
                             <th>H</th>
-                            <th>數量</th>
+                            <th>庫存數量</th>
                         </tr>
                     </thead>
 
                     <tbody>
-                        @if (Model.WarehouseTestAvailableDetailedStockDictionary != null)
+                        @if (Model.WarehouseAvailableDetailedStockDictionary != null)
                         {
-                            @foreach (var key in Model.WarehouseTestAvailableDetailedStockDictionary.Keys)
+                            @foreach (var key in Model.WarehouseAvailableDetailedStockDictionary.Keys)
                             {
-                                var groupedItems = Model.WarehouseTestAvailableDetailedStockDictionary[key]
-                                .GroupBy(item => new { item.FormworkName, item.WarehouseItems.FirstOrDefault()?.SPCode });
+                                if (!Model.WarehouseStockChangedItemsFormworkName.Contains(key))
+                                    continue;
 
-                                //Console.WriteLine("[Page]: FormworkName = " + key);
+                                var groupedItems = Model.WarehouseAvailableDetailedStockDictionary[key]
+                                .GroupBy(item => new { item.FormworkName, item.WarehouseItems.FirstOrDefault()?.SPCode });
 
                                 foreach (var group in groupedItems)
                                 {
                                     var sumQuantity = group.Sum(item => item.WarehouseItems.Sum(w => w.Quantity));
-                                    
-                                    //Console.WriteLine("[Page]: sumQuantity = " + sumQuantity.ToString());
-                                    
-                                    if (sumQuantity != -1)  // Originally if (sumQuantity != 0)
+                                    if (sumQuantity != null)
                                     {
                                         <tr>
                                             <td>@group.Key.FormworkName.Replace("-", "_")</td>
@@ -251,7 +221,7 @@
                         else
                         {
                             <tr>
-                                <td colspan="11">No data available</td>
+                                <td colspan="8">No data available</td>
                             </tr>
                         }
                     </tbody>
@@ -262,8 +232,57 @@
                 <div class="col-md-12 mt-4 mb-4">
                     <button id="exportButton3" asp-action="ExportToExcel" class="btn btn-primary">匯出至Excel</button>
                 </div>
-                <table class="table table-striped text-center mt-3" id="dataTable3" data-excel-name="庫存廢料數量">
+                <table width=100% class="table table-striped text-center mt-3" id="dataTable3" data-excel-name="庫存廢料異動">
                     <thead>
+                        @if (Model.IsPostRequestHandled)
+                        {
+                            <tr>
+                                <th colspan="8">庫存廢料異動表</th>
+                            </tr>
+                            <tr>
+                                <th>查詢倉庫：</th>
+                                <th>@Model.Warehouse.ToString()</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <th>查詢案件：</th>
+                                <th>全部</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <th>查詢期間：</th>
+                                <th>@Model.SearchSrartDate.ToString("yyyyMMddHHmm") TPE</th>
+                                <th> ~ </th>
+                                <th>@Model.SearchEndDate.ToString("yyyyMMddHHmm") TPE</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <th>庫存表單最後更新時間：</th>
+                                <th>@Model.LatestUpdateTime.ToString("yyyyMMddHHmm") TPE</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <th colspan="8"></th>
+                            </tr>
+                        }
                         <tr>
                             <th>模板全名</th>
                             <th>名稱</th>
@@ -272,22 +291,25 @@
                             <th>W2</th>
                             <th>W3</th>
                             <th>H</th>
-                            <th>數量</th>
+                            <th>庫存數量</th>
                         </tr>
                     </thead>
 
                     <tbody>
-                        @if (Model.WarehouseTestWasteStockDictionary != null)
+                        @if (Model.WarehouseWasteStockDictionary != null)
                         {
-                            @foreach (var key in Model.WarehouseTestWasteStockDictionary.Keys)
+                            @foreach (var key in Model.WarehouseWasteStockDictionary.Keys)
                             {
-                                var groupedItems = Model.WarehouseTestWasteStockDictionary[key]
-                                .GroupBy(item => new { item.FormworkName, item.WarehouseItems.FirstOrDefault()?.SPCode});
+                                if (!Model.WarehouseStockChangedItemsFormworkName.Contains(key))
+                                    continue;
+
+                                var groupedItems = Model.WarehouseWasteStockDictionary[key]
+                                .GroupBy(item => new { item.FormworkName, item.WarehouseItems.FirstOrDefault()?.SPCode });
 
                                 foreach (var group in groupedItems)
                                 {
                                     var sumQuantity = group.Sum(item => item.WarehouseItems.Sum(w => w.Quantity));
-                                    if (sumQuantity != 0)
+                                    if (sumQuantity != null)
                                     {
                                         <tr>
                                             <td>@group.Key.FormworkName.Replace("-", "_")</td>
@@ -346,7 +368,7 @@
                         else
                         {
                             <tr>
-                                <td colspan="11">No data available</td>
+                                <td colspan="8">No data available</td>
                             </tr>
                         }
                     </tbody>
@@ -361,7 +383,7 @@
     </div>
 
     <style>
-     .my-card-container {
+        .my-card-container {
             margin-top: 20px; /* Add the desired space (20px in this example) */
         }
 
@@ -380,21 +402,52 @@
 
 
     <script>
-        var lastupdatetime = '@Model.LatestUpdateTime.ToString("yyyyMMddHHmmssfff")' + 'TPE';
-
-
+        var lastupdatetime = '@Model.LatestUpdateTime.ToString("yyyyMMddHHmm")' + 'TPE';
+        var searchstarttime = '@Model.SearchSrartDate.ToString("yyyyMMddHHmm")' + 'TPE';
+        var searchendtime = '@Model.SearchEndDate.ToString("yyyyMMddHHmm")' + 'TPE';
+        var warehousename = '@Model.Warehouse.ToString()';
 
         document.getElementById('exportButton2').addEventListener('click', function () {
+            var fileName = '';
+            switch (warehousename) {
+                case 'WarehouseOne':
+                    fileName = '一廠_庫存異動數量總表' + searchstarttime + '~' + searchendtime + 'lastupdatetime' + lastupdatetime;
+                    break;
+                case 'WarehouseTwo':
+                    fileName = '二廠_庫存異動數量總表' + searchstarttime + '~' + searchendtime + 'lastupdatetime' + lastupdatetime;
+                    break;
+                case 'WarehouseThree':
+                    fileName = '三廠_庫存異動數量總表' + searchstarttime + '~' + searchendtime + 'lastupdatetime' + lastupdatetime;
+                    break;
+                default:
+                    fileName = '測試廠_庫存異動數量總表' + searchstarttime + '~' + searchendtime + 'lastupdatetime' + lastupdatetime;
+                    break;
+            }
+
             var table2excel = new Table2Excel();
-            var fileName = '測試廠庫存數量總表' + lastupdatetime;
             var table2 = document.getElementById('dataTable2');
 
             table2excel.export(table2, fileName);
         });
 
         document.getElementById('exportButton3').addEventListener('click', function () {
+            var fileName = '';
+            switch (warehousename) {
+                case 'WarehouseOne':
+                    fileName = '一廠_庫存廢料異動數量總表' + searchstarttime + '~' + searchendtime + 'lastupdatetime' + lastupdatetime;
+                    break;
+                case 'WarehouseTwo':
+                    fileName = '二廠_庫存廢料異動數量總表' + searchstarttime + '~' + searchendtime + 'lastupdatetime' + lastupdatetime;
+                    break;
+                case 'WarehouseThree':
+                    fileName = '三廠_庫存廢料異動數量總表' + searchstarttime + '~' + searchendtime + 'lastupdatetime' + lastupdatetime;
+                    break;
+                default:
+                    fileName = '測試廠_庫存廢料異動數量總表' + searchstarttime + '~' + searchendtime + 'lastupdatetime' + lastupdatetime;
+                    break;
+            }
+            
             var table2excel = new Table2Excel();
-            var fileName = '測試廠庫存廢料數量總表' + lastupdatetime;
             var table3 = document.getElementById('dataTable3');
 
             table2excel.export(table3, fileName);
@@ -431,4 +484,3 @@
 </body>
 
 </html>
-

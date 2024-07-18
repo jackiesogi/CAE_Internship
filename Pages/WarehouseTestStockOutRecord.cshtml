@@ -1,0 +1,196 @@
+﻿@page
+@model FW_StorageM.Pages.WarehouseTestStockOutRecordModel
+@{
+}
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>鋁模板庫存管理系統 - Login</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="~/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+          rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="~/css/sb-admin-2.min.css" rel="stylesheet">
+
+    <!-- Add Bootstrap from a CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Add jQuery from a CDN -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Add Instascan(QR-Code Scaner) library -->
+    <script type="text/javascript" src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+
+</head>
+
+<body>
+    <h1 class="h3 mb-2 text-primary">模板出庫存紀錄(測試廠)</h1>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12" style="padding-top: 20px;">
+                <form method="post">
+                    <button class="btn btn-primary" type="submit">查詢</button>
+                </form>
+            </div>
+            <div class="col-md-12" style="padding-top: 20px;">
+                <button id="exportButton" asp-action="ExportToExcel" class="btn btn-primary">匯出至Excel</button>
+            </div>
+    </div>
+    <div class="card-body ">
+        <div class="table-responsive">
+        <table class="table table-striped text-center mt-3" id="dataTable">
+            <thead>
+                <tr>
+                    <th>流水號</th>
+                    <th>紀錄時間</th>
+                    <th>紀錄人</th>
+                    <th>區域</th>
+                    <th>庫位</th>
+                    <th>模板全名</th>
+                    <th>名稱</th>
+                    <th>SPCode</th>
+                    <th>W1</th>
+                    <th>W2</th>
+                    <th>W3</th>
+                    <th>H</th>
+                    <th>數量</th>
+                    <th>目標階層一</th>
+                    <th>備註</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (Model.WarehouseTestStockOutRowDataList != null)
+                {
+                    @for (var i = 0; i < Model.WarehouseTestStockOutRowDataList.Count; i++)
+                    {
+                        <tr>
+                            <td>@Model.WarehouseTestStockOutRowDataList[i].Id</td>
+                            <td>@Model.WarehouseTestStockOutRowDataList[i].RecordTime</td>
+                            <td>@Model.WarehouseTestStockOutRowDataList[i].RecordUser</td>
+                            <td>@Model.WarehouseTestStockOutRowDataList[i].StockArea.Replace("-", "_")</td>
+                            <td>@Model.WarehouseTestStockOutRowDataList[i].StockLocation</td>
+                            <td>@Model.WarehouseTestStockOutRowDataList[i].FormworkName</td>
+                            <td>@Model.WarehouseTestStockOutRowDataList[i].FormworkType</td>
+                            <td>@Model.WarehouseTestStockOutRowDataList[i].SPCode</td>
+                            @if ((Model.WarehouseTestStockOutRowDataList[i].Width1 != 0))
+                            {
+                                <td>@Model.WarehouseTestStockOutRowDataList[i].Width1</td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
+                            @if ((Model.WarehouseTestStockOutRowDataList[i].Width2 != 0))
+                            {
+                                <td>@Model.WarehouseTestStockOutRowDataList[i].Width2</td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
+                            @if ((Model.WarehouseTestStockOutRowDataList[i].Width3 != 0))
+                            {
+                                <td>@Model.WarehouseTestStockOutRowDataList[i].Width3</td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
+                            @if ((Model.WarehouseTestStockOutRowDataList[i].Height != 0))
+                            {
+                                <td>@Model.WarehouseTestStockOutRowDataList[i].Height</td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
+                            <td>@Model.WarehouseTestStockOutRowDataList[i].Quantity</td>
+                            <td>@Model.WarehouseTestStockOutRowDataList[i].FormworkDestinationLevel1</td>
+                            <td>@Model.WarehouseTestStockOutRowDataList[i].Mark</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6">No data available</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+
+    <style>
+
+        .my-card-container {
+            margin-top: 20px; /* Add the desired space (20px in this example) */
+        }
+
+        select:disabled {
+            background-color: #eee;
+        }
+
+        #preview, #preview video, #preview + div {
+            z-index: 999999; /* 設置一個非常大的 z-index 值 */
+            background-color: #fff; /* 給它一個背景色 */
+        }
+
+    </style>
+</body>
+</html>
+
+<script>
+
+
+    document.getElementById('exportButton').addEventListener('click', function () {
+        var table2excel = new Table2Excel();
+
+        var fileName = '測試廠模板出庫存紀錄';
+
+
+        var activeTabTables = document.getElementById("dataTable");
+
+        // Export all tables in the active tab with the constructed file name
+        table2excel.export(activeTabTables, fileName);
+
+    });
+
+    $(document).ready(function () {
+
+        var tables = [
+
+            $('#dataTable'),
+
+        ];
+
+        // Destroy existing DataTable instances for all tables
+        tables.forEach(function (table) {
+            var dataTable = table.DataTable();
+            dataTable.destroy();
+        });
+
+        // Reinitialize DataTables with your desired settings for all tables
+        tables.forEach(function (table) {
+            table.DataTable({
+                "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                "pageLength": -1,
+            });
+        });
+
+
+
+    });
+</script>
