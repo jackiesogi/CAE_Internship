@@ -5,17 +5,21 @@
 #### 先 clone 這個 repository
 ```sh
 git clone https://github.com/jackiesogi/CAE_Internship.git
+cd CAE_Internship
 ```
 
 #### 確保有安裝 .NET SDK
 ```bash
 sudo apt install dotnet-sdk-8.0    # Ubuntu
-winget install Microsoft.DotNet.8  # Windows
+winget install Microsoft.DotNet.SDK.8  # Windows
 ```
+如果Runtime是其他版本, 請先在`Formwork-Warehouse-Razor.csproj`檔案內修改`<TargetFramework>`
 
 #### 安裝所需套件
 ```powershell
 dotnet add package Microsoft.Data.SqlClient
+dotnet add package EPPlus 
+dotnet add package Microsoft.EntityFrameworkCore
 ```
 
 #### 填入連線資訊
