@@ -65,22 +65,22 @@ namespace FW_StorageM.Pages
         {
             public int Id { get; set; }
             public DateTimeOffset RecordTime { get; set; }
-            public string RecordUser { get; set; }
-            public string StockArea { get; set; }
-            public string StockLocation { get; set; }
-            public string FormworkName { get; set; }
-            public string FormworkType { get; set; }
+            public string RecordUser { get; set; } = string.Empty;
+            public string StockArea { get; set; } = string.Empty;
+            public string StockLocation { get; set; } = string.Empty;
+            public string FormworkName { get; set; } = string.Empty;
+            public string FormworkType { get; set; } = string.Empty;
             public string SPCode { get; set; }
             public int Width1 { get; set; }
             public int Width2 { get; set; }
             public int Width3 { get; set; }
             public int Height { get; set; }
             public int Quantity { get; set; }
-            public string FormworkDestinationLevel1 { get; set; }
-            public string FormworkDestinationLevel2 { get; set; }
-            public string FormworkDestinationLevel3 { get; set; }
-            public string FormworkDestinationLevel4 { get; set; }
-            public string Mark { get; set; }
+            public string FormworkDestinationLevel1 { get; set; } = string.Empty;
+            public string FormworkDestinationLevel2 { get; set; } = string.Empty;
+            public string FormworkDestinationLevel3 { get; set; } = string.Empty;
+            public string FormworkDestinationLevel4 { get; set; } = string.Empty;
+            public string Mark { get; set; } = string.Empty;
         }
     }
 }

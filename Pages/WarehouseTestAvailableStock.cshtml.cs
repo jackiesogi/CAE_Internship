@@ -29,21 +29,21 @@ namespace FW_StorageM.Pages
 	// Add Constructor
 	public WarehouseTestAvailableStockModel() : base()
         {
-            this.Server = "192.168.122.78,1433";
+            this.Server = "jackiesogi.database.windows.net";
             this.builder = new SqlConnectionStringBuilder
             {
-                //DataSource = Server,
-                //InitialCatalog = "internship.db",
-                //UserID = "CloudSAa21a6b23",
-                //Password = "**********",
-                //Encrypt = true,
-                //TrustServerCertificate = true
-                DataSource = Server, 
-                InitialCatalog = "internship_local.db",
-                UserID = "sa",
+                DataSource = Server,
+                InitialCatalog = "internship.db",
+                UserID = "CloudSAa21a6b23",
                 Password = "**********",
                 Encrypt = true,
                 TrustServerCertificate = true
+                //DataSource = Server, 
+                //InitialCatalog = "internship_local.db",
+                //UserID = "sa",
+                //Password = "**********",
+                //Encrypt = true,
+                //TrustServerCertificate = true
             };
         }
 
