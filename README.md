@@ -19,7 +19,7 @@ winget install Microsoft.DotNet.SDK.8  # Windows
 ```powershell
 dotnet add package Microsoft.Data.SqlClient
 dotnet add package EPPlus 
-dotnet add package Microsoft.EntityFrameworkCore
+dotnet add package Microsoft.EntityFrameworkCore  # 如果使用的是.NET 6 請加上 --version 6.0.15
 ```
 
 #### 填入連線資訊
